@@ -1,3 +1,4 @@
+{% load static %}
 <div class="modal login-modal fade" id="loginWindow" tabindex="-1" role="dialog" aria-labelledby="loginWindowTitle"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -20,7 +21,7 @@
                     <button type="submit" class="btn btn-primary mb-2">Login</button>
                 </form>
             </div>
-            <img src="assets/projectPhotos/ice-tea.png" alt="" class="login-bg">
+            <img src="{% static 'projectPhotos/ice-tea.png' %}" alt="" class="login-bg">
         </div>
     </div>
 </div>

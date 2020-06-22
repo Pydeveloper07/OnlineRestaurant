@@ -1,6 +1,7 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg custom-nav row wow fadeInDown">
     <div class="container">
-        <a class="navbar-brand col-md-2 col-lg-2" href="index.html"><img src="assets/projectPhotos/logo.png"
+        <a class="navbar-brand col-md-2 col-lg-2" href="{% url 'index' %}"><img src="{% static 'projectPhotos/logo.png' %}"
                 alt="logo"></a>
         <div class="collapse navbar-collapse col-md-10 col-lg-10" id="navbarText">
             <ul class="navbar-nav p-0 col-md-9 col-lg-9 flex-center">
@@ -16,14 +17,56 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="modal" data-target="#contactUsWindow">Contact Us</a>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="user_dashboard.html">Dashboard</a>
+                </li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav col-md-3 col-lg-3 p-0 flex-end">
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" id="login" data-toggle="modal" data-target="#loginWindow">Log in</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="sign-up" data-toggle="modal" data-target="#registrationWindow">Sign Up</a>
                 </li>
+                {% else %}
+                <li class="nav-item active">
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+                            id="cardButton">
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                            Cart
+                            <span class="badge badge-pill badge-danger" id="cartNumberOfItems">0</span>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="cardButton" id="cart">
+                            <div class="dropdown-item cart-view-header sticky-top">
+                                <div class="row">
+                                    <div class="col-6 text-left">
+                                        <span>Total Price:</span>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <span class="badge badge-danger" id="totalPrice">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-content dropdown-item">
+                                <div class="items">
+                                    <div class="cart-item">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="food_ordering.html" class="btn btn-success order-btn">Order</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="logout">Logout</a>
+                    <form action="" method="POST" id="logoutForm"></form>
+                </li>
+                {% endif %}
             </ul>
         </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"

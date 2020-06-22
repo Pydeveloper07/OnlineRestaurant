@@ -1,0 +1,34 @@
+<div class="modal rating-modal fade" id="rateWindow" tabindex="-1" role="dialog" aria-labelledby="rateWindowTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content position-relative">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Rate Our Service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <h5 class="text-center text-primary"><strong>Sabohat's review</strong></h5>
+                    <div class="rating-block">
+                        <span>Rating:</span>
+                        <span class="fa fa-star star" data-value="1"></span>
+                        <span class="fa fa-star star" data-value="2"></span>
+                        <span class="fa fa-star star" data-value="3"></span>
+                        <span class="fa fa-star star" data-value="4"></span>
+                        <span class="fa fa-star star" data-value="5"></span>
+                        <span id="rate-emoji"></span>
+                        <p><small>4.1 average based on 199 reviews</small></p>
+                    </div>
+                    <input type="hidden" name="rating" id="rating">
+                    <div class="form-group">
+                        <textarea class="form-control" name="content" cols="30" rows="3"
+                            placeholder="Enter your review here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
