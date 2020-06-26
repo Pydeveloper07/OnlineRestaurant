@@ -10,13 +10,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST">
+                <form action="{% url 'login' %}" method="POST">
+                    {% csrf_token %}
                     <h5><strong>Log</strong> into <span class="text-primary">Account</span></h5>
-                    <div class="form-group" id="loginFormEmail">
-                        <input type="email" class="form-control" placeholder="Email" required>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" placeholder="Username" required>
                     </div>
-                    <div class="form-group" id="loginFormPassword">
-                        <input type="password" class="form-control" placeholder="Password" required>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
                     </div>
                     <button type="submit" class="btn btn-primary mb-2">Login</button>
                 </form>

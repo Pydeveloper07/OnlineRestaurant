@@ -32,7 +32,7 @@ class Food(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(max_length=500, null=True, blank=True)
     price = models.FloatField()
-    total_orders = models.IntegerField()
+    total_orders = models.IntegerField(editable=False, null=True)
     image = models.ImageField(max_length=500, upload_to=food_image_upload_path)
     discount = models.FloatField(null=True, blank=True, help_text='Enter value in %')
     cuisine_id = models.ForeignKey(Cuisine, on_delete=models.CASCADE, null=True, blank=True, related_name='foods')

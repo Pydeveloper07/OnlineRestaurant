@@ -14,6 +14,7 @@ class CustomUser(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='custom_user')
     avatar = models.ImageField(max_length=200, upload_to=user_image_upload_path, null=True, blank=True)
     phone_number = models.CharField(max_length=100, null=True, blank=True)
+    address = models.TextField(max_length=500, null=True)
 
     def __str__(self):
         return self.user_id.username

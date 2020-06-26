@@ -464,12 +464,13 @@ footer img.right {
 }
 .card .discount {
 	text-align: center;
-	width:25%;
+	display:inline-block;
 	margin-left:100%;
 	transform:translateX(-100%);
 	background:red;
 	color:white;
 	border-radius:10px;
+	padding: 0 0.3em;
 }
 .card .image-container{
 	margin: auto;
@@ -771,7 +772,7 @@ footer img.right {
 	color: #fff;
 	text-align: center;
 	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-		url(/assets/projectPhotos/breakfast-bg.jpg) no-repeat center;
+		url(../projectPhotos/breakfast-bg.jpg) no-repeat center;
 	background-size: cover;
 }
 

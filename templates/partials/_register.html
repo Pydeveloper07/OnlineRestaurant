@@ -9,10 +9,17 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST">
+                <form action="{% url 'register' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
                     <h5 class="text-center text-primary"><strong>Register</strong></h5>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="name" placeholder="Name" required>
+                        <input type="text" class="form-control" name="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="first_name" placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="last_name" placeholder="Last Name">
                     </div>
                     <div class="form-group">
                         <input type="email" class="form-control" name="email" placeholder="Email" required>
@@ -28,6 +35,9 @@
                     </div>
                     <div class="form-group">
                         <input type="password" class="form-control" name="conf_password" placeholder="Confirm Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="file" accept="image/*" class="form-control" name="avatar">
                     </div>
                     <button type="submit" class="btn btn-primary mb-2">Register</button>
                 </form>

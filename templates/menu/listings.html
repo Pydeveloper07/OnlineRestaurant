@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load humanize %}
+
+{% block title %} {{title}}  {% endblock %}
+
+{% block content %}
+<section class="listings-header position-relative">
+    <div class="title">
+        <h3>Looking for an unforgettable {{title}}??</h3>
+        <p>Checkout out our daily offerings!</p>
+    </div>
+    <div class="hero-footer-image">
+        <img src="{% static 'projectPhotos/ink white.png' %}" alt="">
+    </div>
+</section>
+<div class="container">
+    <section class="foods">
+        <div class="row">
+            {% if foods %}
+            {% for food in foods %}
+            <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
+                <div class="item" data-foodId="{{food.food_id.id}}" data-foodName="{{food.food_id.name}}">
+                    <div class="card">
+                        <div class="image-container">
+                            <img class="card-img-top" src="{{ food.food_id.image.url }}" alt="Card image cap">
+                        </div>
+                        <div class="card-body">
+                            <div class="res-container text-center" style="font-size: 1.5em; overflow:hidden;">
+                                <p class="float-left"><i class="far fa-thumbs-up like"
+                                        style="color:blue"></i><span><small>{{food.food_id.likes.count}}</small></span></p>
+                                <p class="float-right"><span><small>{{food.food_id.dislikes.count}}</small></span><i
+                                        class="far fa-thumbs-down dislike" style="color:blue"></i></p>
+                            </div>
+                            {% if food.food_id.discount %}
+                            <h3 class="discount">-{{food.food_id.discount|floatformat:"0"}}%</h3>
+                            {% endif %}
+                            <h4 class="card-title text-left food-name">{{food.food_id.name}}</h4>
+                            <p class="content">{{food.food_id.description}}</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="price mb-0" 
+                                    {% if food.food_id.discount %}
+                                    style="text-decoration: line-through;"
+                                    {% endif %}>
+                                    {% with price=food.food_id.price|floatformat:'0' %}
+                                    {{price|intcomma}}
+                                    {% endwith %}</p>
+                                    
+                                    {% if food.food_id.discount %}
+                                    <p class="price actual_price">
+                                        {% with price=food.food_id.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}</p>
+                                    {% endif %}
+                                </div>
+                                <p class="col-md-6 text-right">
+                                    <input type="number" name="quantity" value='1' min='1' class="quantity">
+                                </p>
+                            </div>
+                            <button class="btn order-btn" value="add to cart">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <h1>There is nothing for breakfast :(</h1>
+            {% endif %}
+
+        </div>
+    </section>
+</div>
+{% endblock %}

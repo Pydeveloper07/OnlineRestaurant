@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load range %}
+{% load humanize %}
 
 {% block title %}Welcome to Fantasy!{% endblock %}
 
@@ -57,166 +59,111 @@
                 <img src="{% static 'icons/ar_lb.png' %}" alt="" class="ar-lb">
             </div>
             <div class="col-md-4 col-lg-4 col-sm-12 feature wow fadeInUp" data-wow-delay="0.3s">
-                <a href="listings.html"><img class="type" src="{% static 'projectPhotos/breakfast.png' %}" alt=""></a>
+                <a href="{% url 'get_daily_offerings' id=1 %}"><img class="type" src="{% static 'projectPhotos/breakfast.png' %}" alt=""></a>
                 <h4 class="name text-center">Breakfast</h4>
             </div>
             <div class="col-md-4 col-lg-4 position-relative wow slideInRight" data-wow-delay="0.5s">
                 <img src="{% static 'icons/ar_rb.png' %}" alt="" class="ar-rb">
             </div>
             <div class="col-md-4 col-lg-4 col-sm-12 feature wow fadeInLeft" data-wow-delay="0.6s">
-                <a href="listings.html"><img class="type" src="{% static 'projectPhotos/dinner.png' %}" alt=""></a>
+                <a href="{% url 'get_daily_offerings' id=2 %}"><img class="type" src="{% static 'projectPhotos/dinner.png' %}" alt=""></a>
                 <h4 class="name text-center">Dinner</h4>
             </div>
             <div class="col-md-4 col-lg-4"></div>
             <div class="col-md-4 col-lg-4 col-sm-12 feature wow fadeInRight" data-wow-delay="0.6s">
-                <a href="listings.html"><img class="type" src="{% static 'projectPhotos/lunch.png' %}" alt=""></a>
-                <h4 class="name text-center">Lunch</h4>
+                <a href="{% url 'get_daily_offerings' id=3 %}"><img class="type" src="{% static 'projectPhotos/lunch.png' %}" alt=""></a>
+                <h4 class="name text-center">Supper</h4>
             </div>
         </div>
     </section>
+    {% if foods %}
     <section class="discount-foods">
-        <h1 class="title">Get our foods at <span>&#127775;</span><span
-                class="special">discount</span><span>&#127775;</span></h1>
+        <h1 class="title">Get our foods at <span>&#127775;</span><span class="special">discount</span><span>&#127775;</span></h1>
         <div class="owl-carousel owl-theme owl-carousel-discount">
+            {% for food in foods %}
             <div class="card">
-                <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
+                <div class="image-container">
+                    <img class="card-img-top" src="{{ food.image.url }}" alt="Card image cap">
+                </div>
                 <div class="card-body">
-                    <h3 class="discount">-30%</h3>
-                    <h4 class="card-title text-left">Manti</h4>
-                    <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
+                    <h3 class="discount">-{{food.discount|floatformat:"0"}}%</h3>
+                    <h4 class="card-title text-left food-name">{{food.name}}</h4>
+                    <p class="content">{{food.description}}</p>
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="price mb-0" style="text-decoration: line-through;">4000 sum</p>
-                            <p class="price">2800 sum</p>
+                            <p class="price mb-0" style="text-decoration: line-through;">
+                                {% with price=food.price|floatformat:'0' %}
+                                {{price|intcomma}}
+                                {% endwith %}</p>
+
+                            <p class="price actual_price">
+                                {% with price=food.get_current_price|floatformat:'0' %}
+                                {{price|intcomma}}
+                                {% endwith %}</p>
                         </div>
                         <p class="col-md-6 text-right">
                             <input type="number" name="quantity" value='1' min='1' class="quantity">
                         </p>
                     </div>
-                    <a href="#" class="btn order-btn">Add to cart</a>
+                    <button class="btn order-btn" value="add to cart">
                 </div>
             </div>
-            <div class="card">
-                <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
-                <div class="card-body">
-                    <h3 class="discount">-30%</h3>
-                    <h4 class="card-title text-left">Manti</h4>
-                    <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="price mb-0" style="text-decoration: line-through;">4000 sum</p>
-                            <p class="price">2800 sum</p>
-                        </div>
-                        <p class="col-md-6 text-right">
-                            <input type="number" name="quantity" value='1' min='1' class="quantity">
-                        </p>
-                    </div>
-                    <a href="#" class="btn order-btn">Add to cart</a>
-                </div>
-            </div>
-            <div class="card">
-                <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
-                <div class="card-body">
-                    <h3 class="discount">-30%</h3>
-                    <h4 class="card-title text-left">Manti</h4>
-                    <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="price mb-0" style="text-decoration: line-through;">4000 sum</p>
-                            <p class="price">2800 sum</p>
-                        </div>
-                        <p class="col-md-6 text-right">
-                            <input type="number" name="quantity" value='1' min='1' class="quantity">
-                        </p>
-                    </div>
-                    <a href="#" class="btn order-btn">Add to cart</a>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </section>
+    {% endif %}
 </div>
+{% if reviews %}
 <section class="reviews mt-5">
     <h3 class="title text-center text-white">What others say...<button data-toggle="modal" data-target="#rateWindow"
             class="review-btn">Leave Review</button></h3>
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            {% for review in reviews %}
+            <li data-target="#carouselExampleIndicators" data-slide-to="{{ forloop.counter0 }}" 
+            {% if forloop.counter0 == 0 %}
+            class="active"
+            {% endif %}></li>
+            {% endfor %}
         </ol>
         <div class="carousel-inner">
-            <div class="carousel-item active">
+            {% for review in reviews %}
+            <div 
+            {% if forloop.counter0 == 0 %}
+            class="carousel-item active"
+            {% else %}
+            class="carousel-item"
+            {% endif %}
+            >
                 <div class="review-block">
                     <div class="ava">
-                        <img src="assets/projectPhotos/client1.jpg" alt="Image Not Found">
+                        {% if review.user_id.custom_user.avatar %}
+                        <img src="{{review.user_id.custom_user.avatar.url}}" alt="Image Not Found">
+                        {% else %}
+                        <img src="{% static 'img/user.png' %}" alt="Image Not Found">
+                        {% endif %}
                     </div>
-                    <h3 class="name text-center">Paul Johnson</h3>
+                    {% if review.user_id.first_name and review.user_id.last_name %}
+                    <h3 class="name text-center">{{review.user_id.first_name}} {{review.user_id.last_name}}</h3>
+                    {% else %}
+                    <h3 class="name text-center">{{review.user_id.username}}</h3>
+                    {% endif %}
                     <div class="rating-block text-center">
                         <span>Rating:</span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star"></span>
+                        {% for i in 5|times %}
+                        <span 
+                        {% if i <= review.rate %}
+                        class="fa fa-star checked"
+                        {% else %}
+                        class="fa fa-star"
+                        {% endif %}></span>
+                        {% endfor %}
                     </div>
-                    <p class="text-center"><small class="font-italic">Date: 08.09.2019</small></p>
-                    <p class="text-center review-content"><q>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia minus cupiditate, non, ea
-                            ducimus
-                            animi fuga nostrum, ratione necessitatibus nihil doloremque minima adipisci aperiam rem
-                            deleniti
-                            optio officiis ut quaerat!</q>
-                    </p>
+                    <p class="text-center"><small class="font-italic">Date: {{review.created_date}}</small></p>
+                    <p class="text-center review-content"><q>{{review.content}}</q></p>
                 </div>
             </div>
-            <div class="carousel-item">
-                <div class="review-block">
-                    <div class="ava">
-                        <img src="assets/projectPhotos/client2.jpeg" alt="Image Not Found">
-                    </div>
-                    <h3 class="name text-center">Paul Johnson</h3>
-                    <div class="rating-block text-center">
-                        <span>Rating:</span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star"></span>
-                        <span class="fa fa-star"></span>
-                    </div>
-                    <p class="text-center"><small class="font-italic">Date: 08.09.2019</small></p>
-                    <p class="text-center review-content"><q>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia minus cupiditate, non, ea
-                            ducimus
-                            animi fuga nostrum, ratione necessitatibus nihil doloremque minima adipisci aperiam rem
-                            deleniti
-                            optio officiis ut quaerat!</q>
-                    </p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="review-block">
-                    <div class="ava">
-                        <img src="assets/projectPhotos/client3.jpg" alt="Image Not Found">
-                    </div>
-                    <h3 class="name text-center">Paul Johnson</h3>
-                    <div class="rating-block text-center">
-                        <span>Rating:</span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                        <span class="fa fa-star checked"></span>
-                    </div>
-                    <p class="text-center"><small class="font-italic">Date: 08.09.2019</small></p>
-                    <p class="text-center review-content"><q>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia minus cupiditate, non, ea
-                            ducimus
-                            animi fuga nostrum, ratione necessitatibus nihil doloremque minima adipisci aperiam rem
-                            deleniti
-                            optio officiis ut quaerat!</q>
-                    </p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -228,6 +175,7 @@
         </a>
     </div>
 </section>
+{% endif %}
 <section class="location">
     <iframe
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11982.801139578602!2d69.32825476926264!3d41.337130260507884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x3772abeffc72e7b8!2sInha%20University%20in%20Tashkent!5e0!3m2!1sen!2s!4v1592641428854!5m2!1sen!2s"
