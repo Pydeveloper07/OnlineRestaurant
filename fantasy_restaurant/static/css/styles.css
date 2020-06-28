@@ -397,20 +397,9 @@ footer img.right {
 	left:50%;
 	transform: translateX(-50%);
 	font-family: 'Rye', cursive;}
-.cuisine-uzb{
-	background: url(/assets/img/flags/uzbekistan-flag.jpg) no-repeat center;
-	background-size: cover;
-}
-.cuisine-eu {
-	background: url(/assets/img/flags/eu-flag.jpg) no-repeat center;
-	background-size: cover;
-}
-.cuisine-china {
-	background: url(/assets/img/flags/china-flag.jpg) no-repeat center;
-	background-size: cover;
-}
-.cuisine-italy {
-	background: url(/assets/img/flags/italy-flag.jpg) no-repeat center;
+.cuisine{
+	background-repeat: no-repeat;
+	background-position: center;
 	background-size: cover;
 }
 .food-types .item {
@@ -418,31 +407,17 @@ footer img.right {
 	border-radius: 50px;
 	padding: 4em;
 	max-width:70%;
-	margin:auto;
-	position: relative;
+	position: relative !important;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
 }
-.food-types .item span{
+.food-types .item a{
 	position:absolute;
 	top:100%;
 	left:50%;
 	transform:translateX(-50%);
 	font-weight:bold;
-}
-.food-types .traditional{
-	background: url(/assets/icons/traditional-food.png) no-repeat center;
-	background-color: white;
-}
-.food-types .salad {
-	background: url(/assets/icons/salad.png) no-repeat center;
-	background-color: white;
-}
-.food-types .fish {
-	background: url(/assets/icons/fish.png) no-repeat center;
-	background-color: white;
-}
-.food-types .soup {
-	background: url(/assets/icons/hot-soup.png) no-repeat center;
-	background-color: white;
 }
 .foods{
 	margin: 7em 0 7em 0;
@@ -487,9 +462,16 @@ footer img.right {
 	height:100%;
 	max-height: 100%;
 }
-.foods .card .card-body{
+.card .card-body{
 	margin-top: -90px;
 	padding:2em !important;
+	overflow:hidden !important;
+}
+.card .card-body .bottom-row{
+	position:absolute;
+	bottom: 0;
+	left: 0;
+	padding: 0 2em;
 }
 .card .order-btn {
 	background: #cadcf0;
@@ -510,12 +492,12 @@ footer img.right {
 }
 
 .card .quantity {
-	width: 70%;
+	width: 60%;
 	background: transparent;
 	border: 3px solid #e0e0d1;
 	border-radius: 20px;
 	text-align: center;
-	font-size: 1.2em;
+	font-size: 1em;
 	font-weight: bold;
 	outline: none;
 }
@@ -773,10 +755,13 @@ footer img.right {
 	text-align: center;
 	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
 		url(../projectPhotos/breakfast-bg.jpg) no-repeat center;
-	background-size: cover;
+	background-size: 100% 200%;
 }
 
 .listings-header .title {
+	background-color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 0.4);
+	color: white;
 	font-weight: lighter;
 	position: absolute;
 	top: 60%;
@@ -784,9 +769,10 @@ footer img.right {
 	transform: translate(-50%, -50%);
 }
 
-.listings-header .title h3 {
-	font: normal 2em 'Montserrat', sans-serif;
+.listings-header .title h4 {
+	font: normal 1.5em 'Montserrat', sans-serif;
 	text-transform: uppercase;
+	padding: 0.5em;
 }
 section.reviews{
 	background: url(../projectPhotos/reviews-bg.jpg) no-repeat center;
@@ -843,13 +829,13 @@ section.reviews{
 .rating-modal .rating-block span:last-of-type{
 	font-size: 2em;
 }
-.discount-foods .owl-stage,
-.discount-foods .owl-stage-outer,
-.discount-foods .owl.carousel {
+.owl-stage,
+.owl-stage-outer,
+.owl.carousel {
 	padding: 2em 0;
 }
-.discount-foods .owl-height{
-	height:100% !important;
+.owl-height {
+	height: 100% !important;
 }
 .discount-foods .title{
 	text-align:center;
@@ -857,4 +843,11 @@ section.reviews{
 .discount-foods .title span.special{
 	color:red;
 	text-transform: uppercase;
+}
+#alertPanel {
+	width: 30%;
+	position: fixed;
+	right: 0;
+	top: 20px;
+	z-index: 9999;
 }

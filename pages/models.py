@@ -8,7 +8,7 @@ import math
 
 def user_image_upload_path(instance, filename):
     filename = instance.user_id.username + '.jpg'
-    return os.path.join('users', filename)
+    return os.path.join('users', filename) 
 
 class CustomUser(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='custom_user')
@@ -35,7 +35,7 @@ class UserBonus(models.Model):
         return self.user_id.username
 
 class UserReviews(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
+    user_id = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='review')
     content = models.TextField(max_length=2000)
     created_date = models.DateTimeField(auto_now=True)
     rate = models.IntegerField()

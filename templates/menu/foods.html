@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load humanize %}
 
 {% block title %}Enjoy our meals!{% endblock %}
 
@@ -21,138 +22,88 @@
 <div class="container">
     <section class="section-cuisine fadeInUp mt-5" data-wow-duration="1s" data-wow-delay="300ms">
         <div class="owl-carousel owl-theme owl-carousel-cuisine">
-            <div class="cuisine cuisine-uzb">
+            {% if cuisines %}
+            {% for cuisine in cuisines %}
+            <div class="cuisine" style="background-image:url({{cuisine.image.url}})">
                 <div class="overlay text-center">
-                    <span>Uzbek</span>
+                    <span>{{cuisine.name}}</span>
                 </div>
             </div>
-            <div class="cuisine cuisine-eu">
-                <div class="overlay text-center">
-                    <span>European</span>
-                </div>
-            </div>
-            <div class="cuisine cuisine-china">
-                <div class="overlay text-center">
-                    <span>Chinese</span>
-                </div>
-            </div>
-            <div class="cuisine cuisine-italy">
-                <div class="overlay text-center">
-                    <span>Italian</span>
-                </div>
-            </div>
+            {% endfor %}
+            {% endif %}
         </div>
     </section>
 
     <section class="food-types mt-3">
         <div class="owl-carousel owl-theme owl-carousel-type">
-            <div class="item text-center traditional">
-                <span>Traditional</span>
+            {% if types %}
+            {% for type in types %}
+            <div class="item text-center" style="background-image: url({{type.image.url}})">
+                <a href="#{{type.name}}">{{type.name}}</a>
             </div>
-            <div class="item text-center salad">
-                <span>Salad</span>
-            </div>
-            <div class="item text-center fish">
-                <span>Fish</span>
-            </div>
-            <div class="item text-center soup">
-                <span>Soup</span>
-            </div>
+            {% endfor %}
+            {% endif %}
         </div>
     </section>
 
     <section class="foods">
-        <h2 class="title text-center">Traditional foods</h2>
+        {% for type in types %}
+        <h2 id="{{type.name}}" class="title text-center">{{type.name}}</h2>
         <div class="row">
+            {% for food in type.foods.all %}
             <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
                 <div class="item">
                     <div class="card">
                         <div class="image-container">
-                            <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
-                        </div>
-                        <div class="card-body">
-                            <div class="res-container text-center" style="font-size: 1.5em;">
-                                <i class="far fa-thumbs-up like" style="color:blue;"></i><span><small>78</small></span>
-                                <i class="far fa-thumbs-down dislike"
-                                    style="color:blue;"></i><span><small>3</small></span>
-                            </div>
-                            <form action="" method="post" id="formfood">
-                                <h4 class="card-title text-left food-name">Manti</h4>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <div class="row">
-                                    <p class="col-md-6 price" data-price="40000">40,000 sum</p>
-                                    <p class="col-md-6 text-right">
-                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
-                                    </p>
-                                </div>
-                                <input type="submit" class="btn order-btn" value="add to cart">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
-                <div class="item">
-                    <div class="card">
-                        <div class="image-container">
-                            <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
+                            <img class="card-img-top" src="{{food.image.url}}" alt="Card image cap">
                         </div>
                         <div class="card-body">
                             <div class="res-container text-center" style="font-size: 1.5em; overflow:hidden;">
                                 <p class="float-left"><i class="far fa-thumbs-up like"
-                                        style="color:blue"></i><span><small>78</small></span></p>
-                                <p class="float-right"><span><small>3</small></span><i
+                                        style="color:blue"></i><span><small>{{food.likes.count}}</small></span></p>
+                                <p class="float-right"><span><small>{{food.dislikes.count}}</small></span><i
                                         class="far fa-thumbs-down dislike" style="color:blue"></i></p>
                             </div>
-                            <form action="" method="post" id="formfood">
-                                <h4 class="card-title text-left food-name">Manti</h4>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <div class="row">
-                                    <p class="col-md-6 price" data-price="40000">40,000 sum</p>
-                                    <p class="col-md-6 text-right">
-                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
+                            <h4 class="card-title text-left food-name">{{food.name}}</h4>
+                            <p class="content">{{food.description}}</p>
+                            <div class="row bottom-row">
+                                <div class="col-md-6">
+                                    {% if food.discount %}
+                                    <p class="price mb-0" style="text-decoration: line-through;">
+                                        {% with price=food.price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
                                     </p>
+                                    <p class="price actual_price">
+                                        {% with price=food.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
+                                    {% else %}
+                                    <p class="price" data-price="{{food.price}}">
+                                        {% with price=food.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
+                                    {% endif %}
                                 </div>
-                                <input type="submit" class="btn order-btn" value="add to cart">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
-                <div class="item">
-                    <div class="card">
-                        <div class="image-container">
-                            <img class="card-img-top" src="assets/img/Food/manti.jpg" alt="Card image cap">
-                        </div>
-                        <div class="card-body">
-                            <div class="res-container text-center" style="font-size: 1.5em;">
-                                <i class="fas fa-heart like mr-1" style="color:red;"></i><span><small>78</small></span>
-                                <i class="fas fa-heart-broken dislike mr-1"
-                                    style="color:red"></i><span><small>3</small></span>
+                                <div class="col-md-6">
+                                    {% if food.discount %}
+                                    <h4 class="discount">-{{food.discount|floatformat:"0"}}%</h4>
+                                    {% endif %}
+                                    <p class="text-right">
+                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
+                                    </p>                                    
+                                </div>
                             </div>
-                            <form action="" method="post" id="formfood">
-                                <h4 class="card-title text-left food-name">Manti</h4>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <p class="content">Go'sht, Piyoz, Un, Tuz, Suv</p>
-                                <div class="row">
-                                    <p class="col-md-6 price" data-price="40000">40,000 sum</p>
-                                    <p class="col-md-6 text-right">
-                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
-                                    </p>
-                                </div>
-                                <input type="submit" class="btn order-btn" value="add to cart">
-                            </form>
+                            <button class="btn order-btn">add to cart</button>
                         </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
+        {% endfor %}
     </section>
 </div>
 {% endblock %}

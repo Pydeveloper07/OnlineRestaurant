@@ -1,3 +1,6 @@
+
+{% load range %}
+
 <div class="modal rating-modal fade" id="rateWindow" tabindex="-1" role="dialog" aria-labelledby="rateWindowTitle"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -9,24 +12,55 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST">
-                    <h5 class="text-center text-primary"><strong>Sabohat's review</strong></h5>
+                <form action="{% url 'rate' %}" method="POST" id="reviewForm">
+                    {% csrf_token %}
+                    {% with logged_in=user.is_authenticated %}
+                    {% if not logged_in %}
+                    <h5 class="text-center alert alert-danger"><strong>You must login first!</strong></h5>
+                    {% else %}
+                    <h5 class="text-center text-primary">
+                        <strong>
+                            {% if user.first_name and user.last_name %}
+                            {{user.first_name}} {{user.last_name}}'s review
+                            {% else %}
+                            {{user.username}}'s review
+                            {% endif %}
+                        </strong>
+                    </h5>
+                    {% endif %}
                     <div class="rating-block">
                         <span>Rating:</span>
-                        <span class="fa fa-star star" data-value="1"></span>
-                        <span class="fa fa-star star" data-value="2"></span>
-                        <span class="fa fa-star star" data-value="3"></span>
-                        <span class="fa fa-star star" data-value="4"></span>
-                        <span class="fa fa-star star" data-value="5"></span>
+                        {% if user.review %}
+                             {% for i in 5|times %}
+                                <span 
+                                {% if i <= user.review.rate %}
+                                class="fa fa-star star checked"
+                                {% else %}
+                                class="fa fa-star star"
+                                {% endif %}
+                                data-value="{{i}}"></span>
+                            {% endfor %}
+                        {% else %}
+                            {% for i in 5|times %}
+                                <span class="fa fa-star star" data-value="{{i}}"></span>
+                            {% endfor %}
+                        {% endif %}
                         <span id="rate-emoji"></span>
-                        <p><small>4.1 average based on 199 reviews</small></p>
+                        <span id="rateError" class="text-danger font-weight-bold" style="font-size:small; display:none">This field is required</span>
+                        <p><small>{{average_rating}} average based on {{reviews.count}} reviews</small></p>
                     </div>
-                    <input type="hidden" name="rating" id="rating">
+                    <input type="hidden" name="rating" id="rating" {% if user.review %} value={{user.review.rate}} {% endif %}>
+                    <input type="hidden" name="review_status" id="reviewStatus">
                     <div class="form-group">
-                        <textarea class="form-control" name="content" cols="30" rows="3"
-                            placeholder="Enter your review here..."></textarea>
+                        <textarea class="form-control" name="content" cols="30" rows="3" id="reviewContent"
+                            placeholder="Enter your review here..." 
+                            {% if not logged_in %} 
+                                disabled 
+                            {% endif %}>{% if user.review %}{{user.review.content}}{% endif %}</textarea>
+                            <span id="reviewContentError" class="text-danger font-weight-bold" style="font-size:small; display:none">This field is required</span>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                    <button type="submit" class="btn btn-primary mb-2" {% if not logged_in %} disabled {% endif %}>Submit</button>
+                    {% endwith %}
                 </form>
             </div>
         </div>

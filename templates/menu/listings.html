@@ -6,10 +6,27 @@
 {% block title %} {{title}}  {% endblock %}
 
 {% block content %}
-<section class="listings-header position-relative">
+<section class="listings-header position-relative" 
+    {% if title == 'Drinks' %}
+        style="background-image: url({% static 'projectPhotos/drinks-page-bg.jpg' %})"
+    {% elif title == 'Breakfast' %}
+        style="background-image: url({% static 'projectPhotos/breakfast-bg.jpg' %})"
+    {% elif title == 'Dinner' %}
+        style="background-image: url({% static 'projectPhotos/dinner-bg.jpg' %})"
+    {% elif title == 'Supper' %}
+        style="background-image: url({% static 'projectPhotos/supper-bg.jpg' %})"
+    {% endif %}>
+    
     <div class="title">
-        <h3>Looking for an unforgettable {{title}}??</h3>
-        <p>Checkout out our daily offerings!</p>
+        {% if title == 'Drinks' %}
+        <h4>Don't chase anything but drinks and dreams...</h4>
+        {% elif title == 'Breakfast' %}
+        <h4>A good breakfast is a start of a good day!</h4>
+        {% elif title == 'Dinner' %}
+        <h4>Dinner is where the magic happens in the kitchen!</h4>
+        {% elif title == 'Supper' %}
+        <h4>After dinner rest a while, after supper walk a while!</h4>
+        {% endif %}
     </div>
     <div class="hero-footer-image">
         <img src="{% static 'projectPhotos/ink white.png' %}" alt="">
@@ -19,12 +36,13 @@
     <section class="foods">
         <div class="row">
             {% if foods %}
+            {% if not title == 'Drinks' %}
             {% for food in foods %}
             <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
-                <div class="item" data-foodId="{{food.food_id.id}}" data-foodName="{{food.food_id.name}}">
+                <div class="item">
                     <div class="card">
                         <div class="image-container">
-                            <img class="card-img-top" src="{{ food.food_id.image.url }}" alt="Card image cap">
+                            <img class="card-img-top" src="{{food.food_id.image.url}}" alt="Card image cap">
                         </div>
                         <div class="card-body">
                             <div class="res-container text-center" style="font-size: 1.5em; overflow:hidden;">
@@ -33,42 +51,101 @@
                                 <p class="float-right"><span><small>{{food.food_id.dislikes.count}}</small></span><i
                                         class="far fa-thumbs-down dislike" style="color:blue"></i></p>
                             </div>
-                            {% if food.food_id.discount %}
-                            <h3 class="discount">-{{food.food_id.discount|floatformat:"0"}}%</h3>
-                            {% endif %}
                             <h4 class="card-title text-left food-name">{{food.food_id.name}}</h4>
                             <p class="content">{{food.food_id.description}}</p>
-                            <div class="row">
+                            <div class="row bottom-row">
                                 <div class="col-md-6">
-                                    <p class="price mb-0" 
                                     {% if food.food_id.discount %}
-                                    style="text-decoration: line-through;"
-                                    {% endif %}>
-                                    {% with price=food.food_id.price|floatformat:'0' %}
-                                    {{price|intcomma}}
-                                    {% endwith %}</p>
-                                    
-                                    {% if food.food_id.discount %}
+                                    <p class="price mb-0" style="text-decoration: line-through;">
+                                        {% with price=food.food_id.price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
                                     <p class="price actual_price">
                                         {% with price=food.food_id.get_current_price|floatformat:'0' %}
                                         {{price|intcomma}}
-                                        {% endwith %}</p>
+                                        {% endwith %}
+                                    </p>
+                                    {% else %}
+                                    <p class="price" data-price="{{food.food_id.price}}">
+                                        {% with price=food.food_id.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
                                     {% endif %}
                                 </div>
-                                <p class="col-md-6 text-right">
-                                    <input type="number" name="quantity" value='1' min='1' class="quantity">
-                                </p>
+                                <div class="col-md-6">
+                                    {% if food.food_id.discount %}
+                                    <h4 class="discount">-{{food.food_id.discount|floatformat:"0"}}%</h4>
+                                    {% endif %}
+                                    <p class="text-right">
+                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
+                                    </p>
+                                </div>
                             </div>
-                            <button class="btn order-btn" value="add to cart">
+                            <button class="btn order-btn">add to cart</button>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
             {% else %}
-            <h1>There is nothing for breakfast :(</h1>
+            {% for food in foods %}
+            <div class="col-md-4 col-lg-4 col-sm-6 col-xs-12">
+                <div class="item">
+                    <div class="card">
+                        <div class="image-container">
+                            <img class="card-img-top" src="{{food.image.url}}" alt="Card image cap">
+                        </div>
+                        <div class="card-body">
+                            <div class="res-container text-center" style="font-size: 1.5em; overflow:hidden;">
+                                <p class="float-left"><i class="far fa-thumbs-up like"
+                                        style="color:blue"></i><span><small>{{food.likes.count}}</small></span></p>
+                                <p class="float-right"><span><small>{{food.dislikes.count}}</small></span><i
+                                        class="far fa-thumbs-down dislike" style="color:blue"></i></p>
+                            </div>
+                            <h4 class="card-title text-left food-name">{{food.name}}</h4>
+                            <p class="content">{{food.description}}</p>
+                            <div class="row bottom-row">
+                                <div class="col-md-6">
+                                    {% if food.discount %}
+                                    <p class="price mb-0" style="text-decoration: line-through;">
+                                        {% with price=food.price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
+                                    <p class="price actual_price">
+                                        {% with price=food.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
+                                    {% else %}
+                                    <p class="price" data-price="{{food.price}}">
+                                        {% with price=food.get_current_price|floatformat:'0' %}
+                                        {{price|intcomma}}
+                                        {% endwith %}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if food.discount %}
+                                    <h4 class="discount">-{{food.discount|floatformat:"0"}}%</h4>
+                                    {% endif %}
+                                    <p class="text-right">
+                                        <input type="number" name="quantity" value='1' min='1' class="quantity">
+                                    </p>
+                                </div>
+                            </div>
+                            <button class="btn order-btn">add to cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
             {% endif %}
-
+            {% else %}
+            <h1>There is nothing for {{title}} :(</h1>
+            {% endif %}
         </div>
     </section>
 </div>

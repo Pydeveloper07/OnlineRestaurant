@@ -42,7 +42,7 @@ class Food(models.Model):
         if self.discount:
             return self.price*(1 - self.discount/100)
         else:
-            return self.price
+            return self.price 
 
     def __str__(self):
         return self.name

@@ -1,6 +1,7 @@
 $(document).ready(function(){
     var wow = new WOW();
     wow.init();
+    $('#alertPanel').delay(5000).fadeOut(1000);
     // index.html js
     try {
         var form = $('#tableOrderForm');
@@ -24,7 +25,35 @@ $(document).ready(function(){
 					parent.append(elem);
 				});
 			}
-		});
+        });
+        $('#editReviewBtn').click(function(){
+            $('#reviewStatus').val('updating');
+        });
+        $('#leaveReviewBtn').click(function () {
+            $('#reviewStatus').val('new');
+        });
+        $('#reviewForm button[type="submit"]').click(function (event) {
+            event.preventDefault();
+            var reviewContent = $.trim($('#reviewContent').val());
+            if ($('#rating').val() && (reviewContent != '')) {
+                console.log("hello");
+                $('#reviewForm').submit();
+            }
+            else {
+                if (!$('#rating').val()) {
+                    $('#rateError').fadeIn();
+                }
+                else {
+                    $('#rateError').fadeOut();
+                }
+                if (reviewContent != '') {
+                    $('#reviewContentError').fadeIn();
+                }
+                else {
+                    $('#reviewContentError').fadeOut();
+                }
+            }
+        });
 		$(document).on('click', '.star', function(){
 			 $('#rating').val($(this).attr('data-value'));
 			 value = $(this).attr('data-value');
