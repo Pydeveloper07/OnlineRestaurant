@@ -24,7 +24,7 @@ class Bonus(models.Model):
     value = models.FloatField()
 
     def __str__(self):
-        return self.name
+        return self.name 
     
 class UserBonus(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_bonus')
@@ -78,10 +78,10 @@ class OrderHistory(models.Model):
         return self.user_id.username
     
     def get_item_list(self):
-        return list(items_list.split(','))
+        return list(self.items_list.split(','))
     
     def get_quantity_list(self):
-        return list(items_quantity_list.split(','))
+        return list(self.items_quantity_list.split(','))
 
 class ProcessingOrder(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='processing_orders')

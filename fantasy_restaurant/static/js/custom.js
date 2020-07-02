@@ -36,7 +36,6 @@ $(document).ready(function(){
             event.preventDefault();
             var reviewContent = $.trim($('#reviewContent').val());
             if ($('#rating').val() && (reviewContent != '')) {
-                console.log("hello");
                 $('#reviewForm').submit();
             }
             else {

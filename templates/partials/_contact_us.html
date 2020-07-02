@@ -9,19 +9,37 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST">
+                <form method="POST" id="contactForm">
+                    {% csrf_token %}
+                    {% if not user.is_authenticated %}
+                    <h5 class="alert alert-danger">You are not logged in!</h5>
+                    {% else %}
                     <h5 class="text-center text-primary"><strong>Contact Us</strong></h5>
+                    {% endif %}
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Name" name="name" required>
+                        <input type="text" class="form-control" placeholder="Username" name="username"
+                        {% if user.is_authenticated %}
+                        value="{{user.username}}"
+                        disabled
+                        {% else %}
+                        disabled
+                        {% endif %}
+                        required>
                     </div>
                     <div class="form-group">
-                        <input type="email" class="form-control" placeholder="Email" name="email" required>
+                        <input type="email" class="form-control" placeholder="Email" name="email" 
+                        {% if user.is_authenticated %}
+                        value="{{user.email}}"
+                        {% else %}
+                        disabled
+                        {% endif %}
+                        required>
                     </div>
                     <div class="form-group">
                         <textarea class="form-control" name="message" cols="30" rows="3"
-                            placeholder="Enter your message here..."></textarea>
+                            placeholder="Enter your message here..." {% if not user.is_authenticated %} disabled {% endif %}></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                    <button type="submit" class="btn btn-primary mb-2"  {% if not user.is_authenticated %} disabled {% endif %}>Submit</button>
                 </form>
             </div>
         </div>

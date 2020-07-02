@@ -1,0 +1,53 @@
+<div class="modal edit-modal fade" id="editProfileWindow" tabindex="-1" role="dialog"
+    aria-labelledby="editProfileWindowTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content position-relative">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Edit Profile Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'edit_profile' %}" enctype="multipart/form-data" id="editProfileForm">
+                    {% csrf_token %}
+                    <h5 class="text-center text-primary"><strong>Edit your info</strong></h5>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" name="username" value="{{user.username}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" class="form-control" name="first_name" value="{{user.first_name}}" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" class="form-control" name="last_name" value="{{user.last_name}}" placeholder="Last Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="address" class="form-control" placeholder="Address" name="address"
+                            value="{{user.custom_user.address}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" class="form-control" placeholder="Phone Number" name="phone_number"
+                            value="{{user.custom_user.phone_number}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" placeholder="Email" name="email" value="{{user.email}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">User Avatar:</label>
+                        {% if user.custom_user.avatar %}
+                        <p>Current file:<a href="{{user.custom_user.avatar.url}}" data-lightbox="user_avatar"><small class="text-primary">{{user.custom_user.avatar.url}}</small></a></p>
+                        {% endif %}
+                        <input type="file" class="form-control" accept="image/*" name="avatar">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

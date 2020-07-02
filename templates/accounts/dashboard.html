@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome {{user.username}}!{% endblock %}
+{% load humanize %}
+{% load range %}
+{% load static %}
+
+{% block content %}
+<section class="dashboard-header position-relative">
+    <div class="title">
+        <h3>Welcome, {% if user.first_name and user.last_name %}{{user.first_name}} {{user.last_name}}{% else %}{{user.username}}{% endif %}!</h3>
+    </div>
+    <div class="hero-footer-image">
+        <img src="{% static 'projectPhotos/ink white.png' %}" alt="">
+    </div>
+</section>
+{% include 'partials/_alerts.html' %}
+<div class="container">
+    <div class="user-info row">
+        <div class="avatar col-md-3 col-lg-3 text-center pt-4">
+            {% if user.custom_user.avatar %}
+            <img src="{{user.custom_user.avatar.url}}" alt="">
+            {% else %}
+            <i class="far fa-user-circle fa-10x"></i>
+            {% endif %}
+        </div>
+        <div class="info-content col-md-6 col-lg-6">
+            <div class="row">
+                <h4 class="name col-md-12">{% if user.first_name and user.last_name %}{{user.first_name}} {{user.last_name}}{% else %}{{user.username}}{% endif %}</h4>
+                <div class="col-md-6 col-sm-12">
+                    <i class="fas fa-phone"></i> <strong>Phone Number:</strong><br> 
+                    {% if user.custom_user.phone_number %}
+                    {{user.custom_user.phone_number}}
+                    {% else %}
+                    Unknown
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <i class="fas fa-mail-bulk"></i> <strong>Email:</strong><br>
+                    {{user.email}}
+                </div>
+                <div class="col-sm-12">
+                    <i class="fa fa-map-marker"></i> <strong>Address:</strong>
+                    {% if user.custom_user.address %}
+                    {{user.custom_user.address}}
+                    {% else %}
+                    Unknown
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="status-container col-md-3 col-sm-3">
+            <div class="row">
+                <a class="btn btn-edit-profile col-12" data-toggle="modal" data-target="#editProfileWindow">
+                    Edit profile
+                </a>
+                <div class="col-12 status mt-2">
+                    <div class="vaucher">
+                        <h3 class="type text-center text-uppercase">
+                            {% if user.user_bonus.exist %}
+                            {{user.user_bonus.bonus_id.name}}
+                            {% else %}
+                            None
+                            {% endif %}
+                        </h3>
+                        <p class="value text-danger text-center">
+                            {% if user.user_bonus.exist %}
+                            {{user.user_bonus.bonus_id.value}}
+                            {% else %}
+                            0
+                            {% endif %}
+                            % off for any order                           
+                        </p>
+                    </div>
+                    <h4 class="text-center text-uppercase text-info">Status</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="statistics">
+        <div class="row">
+            <div class="col-md-3 col-sm-12"></div>
+            <div class="col-md-3 col-sm-12">
+                <div class="item" id="total-orders">
+                    <h2 class="value text-left timer" data-from="0" data-to="{{number_of_orders}}" data-speed="1000">0</h2>
+                    <p class="title">Total orders</p>
+                    <i class="fas fa-shopping-cart fa-3x custom-i"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12">
+                <div class="item" id="total-expenses">
+                    <h2 class="value text-left"><span class="timer" data-from="0" data-to="{{total_expense}}"
+                            data-speed="2000">0</span></h2>
+                    <p class="title">Total expenses</p>
+                    <i class="fas fa-wallet fa-3x custom-i"></i>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12"></div>
+        </div>
+    </section>
+    <section class="history mb-5">
+        <h2 class="text-center text-info mb-4">Here is your order history</h2>
+        <div class="row">
+            <div class="col-12">
+                {% if orders %}
+                {% for key, value in orders.items %}
+                <div class="order-block row">
+                    <div class="col-3">
+                        <div class="order-name text-center">
+                            <span>№{{key}}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="order-details flex-column">
+                            {% with food_list=value|access:'foods' %}
+                            {% for k, val in food_list.items %}
+                            <div class="item row">
+                                <div class="col-1">
+                                    <span class="badge badge-secondary">{{forloop.counter}}.</span>
+                                </div>
+                                <div class="col-10">
+                                    <p class="item-name">
+                                        {% with food=val|access:'food' %}
+                                        {{food.name}}
+                                        {% endwith %}
+                                    </p>
+                                </div>
+                                <div class="col-1">
+                                    <span class="badge badge-primary">{{val|access:'quantity'}}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                        <div class="col-12 text-center">
+                            <div class="summary">
+                                <p>Total cost(+delivery fee): <span class="badge badge-success">
+                                    {% with total_cost=value|access:'total_cost'|floatformat:'0' %}
+                                    {{total_cost|intcomma}}
+                                    {% endwith %}
+                                </span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="date-block text-center">
+                            <span>{{value|access:'created_date'}}</span>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+{% include 'partials/_edit_profile.html' %}
+{% endblock %}
+{% block script %}
+<script>
+    $(".timer").waypoint(function(){
+        $(this).countTo()
+        },{triggerOnce:!0,offset:'90%'});
+
+    $('#editProfileForm button[type="submit"]').on('click', function(event){
+        event.preventDefault();
+        var form = $('#editProfileForm');
+        if (form.find('small').length){
+            form.find('small').each(function(){
+                $(this).remove();
+            });
+        }
+        var isValid = false;
+        var userName = form.find('input[name="username"]').val();
+        var phoneNumber = form.find('input[name="phone_number"]').val();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'check_username' %}",
+            data: {
+                'username': userName,
+                'csrfmiddlewaretoken': "{{csrf_token}}",
+            },
+            dataType: 'json',
+            success: function(response){
+                if (response.error){
+                    isValid = false;
+                    var elem = "<small class='text-danger'>" + response.message + "</small>";
+                    form.find('input[name="username"]').closest('.form-group').append(elem);
+                }
+                else{
+                    isValid = true;
+                }
+            },
+            error: function(){
+                alert('Internal error occurred!');
+                isValid = false;
+            }
+        });
+        if (phoneNumber != '' && /^(\+998){1}[0-9]{9}$/.test(phoneNumber)){
+            isValid = true;
+        }
+        else{
+            var elem = "<small class='text-danger'>Phone number should be like '+998XXXXXXXXX'</small>";
+            form.find('input[name="phone_number"]').closest('.form-group').append(elem);
+        }
+        if (isValid){
+            form.submit();
+        }
+    });
+</script>
+{% endblock %}

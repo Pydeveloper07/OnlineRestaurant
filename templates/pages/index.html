@@ -191,3 +191,61 @@
 </section> -->
 {% include 'partials/_user_rating.html' %}
 {% endblock %}
+{% block script %}
+<script>
+    $('#signUpForm button[type="submit"]').on('click', function(event){
+        event.preventDefault();
+        var form = $('#signUpForm');
+        if (form.find('small').length){
+            form.find('small').each(function(){
+                $(this).remove();
+            });
+        }
+        var isValid = false;
+        var username = form.find('input[name="username"]').val();
+        var password = form.find('input[name="password"]').val();
+        var confPassword = form.find('input[name="conf_password"]').val();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "check_username" %}',
+            dataType: 'json',
+            data: {
+                'username': username,
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function(response){
+                if (response.error){
+                        var elem = "<small class='text-danger'>" + response.message + "</small>";
+                        form.find('input[name="username"]').closest('.form-group').append(elem);
+                        isValid = false;
+                    }
+                else{
+                    isValid = true;
+                }
+            },
+            error: function(){
+                isValid = false;
+                alert('Internal error occurred');
+            }
+        });
+        if (password == confPassword){
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password)){
+                var elem = "<small class='text-danger'>" + "Minimum 6 characters, at least one uppercase letter, one lowercase letter, one number and one special character" + "</small>";
+                form.find('input[name="password"]').closest('.form-group').append(elem);
+                isValid = false;
+            }
+            else{
+                isValid = true;
+            }
+        }
+        else{
+            var elem = "<small class='text-danger'>" + "Passwords don't match!" + "</small>";
+            form.find('input[name="password"]').closest('.form-group').append(elem);
+            isValid = false;
+        }
+        if (isValid){
+            form.submit();
+        }
+    });
+</script>
+{% endblock %}
