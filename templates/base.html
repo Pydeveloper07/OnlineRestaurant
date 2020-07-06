@@ -51,5 +51,33 @@
             event.preventDefault();
         });
     {% endif %}
+    $('#tableOrderLink').click(function(){
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'get_tables' %}",
+            dataType: 'json',
+            data: {
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function(response){
+                addTablesToForm(response);
+            },
+            error: function(){
+                console.log('Internal error occurred');
+            }
+        });        
+        function addTablesToForm(response){
+            var element = document.getElementById('tables'); 
+            var options = document.querySelectorAll('#tables option:not(:first-child)');
+            options.forEach(function(option){
+                option.parentElement.removeChild(option);
+            });
+            for (var i=0; i<response.tables.length; i++){
+                var innerText = `Table #${i+1}(${response.tables[i].capacity}-people)`;
+                var value = response.tables[i].id;
+                element.options[element.options.length] = new Option(innerText, value)
+            }  
+        }
+    });
 </script>
 </html>

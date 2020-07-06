@@ -60,11 +60,12 @@ class ReservedTable(models.Model):
     def __str__(self):
         return '{0}-{1}'.format(self.user_id.username, self.table_id.id)
 
-    def get_total_price(self):
-        start_time = datetime.timedelta(hours=self.start_time.hour, minutes=self.start_time.minute)
-        end_time = datetime.timedelta(hours=self.end_time.hour, minutes=self.end_time.minute)
-        difference_in_minutes = (end_time - start_time).total_seconds()/60
-        return math.ceil(float(difference_in_minutes)/float(self.table_id.duration))*self.table_id.price_per_duration
+    @staticmethod
+    def get_total_price(start_time, end_time, duration, price_per_duration):
+        st = datetime.timedelta(hours=int(start_time[0]), minutes=int(start_time[1]))
+        et = datetime.timedelta(hours=int(end_time[0]), minutes=int(end_time[1]))
+        difference_in_minutes = (et - st).total_seconds()/60
+        return math.ceil(float(difference_in_minutes)/float(duration))*price_per_duration
 
 class OrderHistory(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='orders')  

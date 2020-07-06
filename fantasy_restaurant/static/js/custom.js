@@ -6,25 +6,106 @@ $(document).ready(function(){
     try {
         var form = $('#tableOrderForm');
 		form.find('select').on('change', function() {
+            document.getElementById('tableHelp').innerHTML = null;
+            var tableId = form.find('select').val();
 			$.ajax({
                 type: "POST",
-                url: "url",
+                url: form.attr('data-url'),
                 data: {
-                    'tableId': foodId,
-                    'csrfmiddlewaretoken': '{{csrf_token}}',
+                    'tableId': tableId,
+                    'csrfmiddlewaretoken': form.attr('data-csrf'),
                 },
                 dataType: 'json',
                 success: function (response) {
-                    warnUser(response);
+                    giveTableInfo(response);
                 },
+                error: function(){
+                    console.log('Internal Error Occurred');
+                }
 			});
-			var parent = form.find('#tableHelp');
-			function warnUser(response){
-				$.each(response, function(){
-					var elem = "<span>" + this.from + "-" + this.to + "</span>";
-					parent.append(elem);
-				});
-			}
+			function giveTableInfo(response){
+                var infoCont = $('#tableHelp');
+                if (response.is_busy){
+                    infoCont.append("<span>Table is busy:</span>");
+                    for (var i = 0; i < response.time_list.length; i++) {
+                        var child = "<span>" + response.time_list[i].start_time + '-' + response.time_list[i].end_time + "</span>";
+                        infoCont.append(child);
+                    }
+                }
+                else{
+                    infoCont.append("<span class='text-success'>Table is not busy today!</span>");
+                }
+            }
+        });
+        form.find('#numberOfPeople').on('change', function(){
+            if ($('#tables').val()){
+                var url = $(this).attr('data-url');
+                var csrf_token = $('#tableOrderForm').attr('data-csrf');
+                var tableId = $('#tables').val();
+                var errMessageCont = $(this).siblings('.err-message');
+                var numOfPeople = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    dataType: 'json',
+                    data: {
+                        'tableId': tableId,
+                        'numOfPeople': numOfPeople,
+                        'csrfmiddlewaretoken': csrf_token
+                    },
+                    success: function (response) {
+                        if (response.error) {
+                            errMessageCont.text(response.message);
+                        }
+                        else{
+                            errMessageCont.text('');
+                        }
+                    },
+                    error: function () {
+                        console.log('Internal Error Occurred');
+                    }
+                });
+            }
+        });
+        form.find('#reserveStartTime, #reserveEndTime').on('change', function(){
+            if ($('#reserveStartTime').val() && $('#reserveEndTime').val() && $('#tables').val()){
+                var url = $('#reserveEndTime').attr('data-url');
+                var csrf_token = $('#tableOrderForm').attr('data-csrf');
+                var messageCont = $('#reserveTimeMessage');
+                var tableId = $('#tables').val();
+                var startTime = $('#reserveStartTime').val();
+                var endTime = $('#reserveEndTime').val();
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    dataType: 'json',
+                    data: {
+                        'tableId': tableId,
+                        'startTime': startTime,
+                        'endTime': endTime,
+                        'csrfmiddlewaretoken': csrf_token
+                    },
+                    success: function(response){
+                        if (response.error){
+                            messageCont.attr('class', 'text-danger');
+                            messageCont.text(response.message);
+                        }
+                        else{
+                            messageCont.attr('class', 'font-weight-bold text-warning');
+                            messageCont.text(response.message);
+                        }
+                    },
+                    error: function(){
+                        console.log('Internal Error Occurred');
+                    }
+                });
+            }
+        });
+        form.find('button[type="submit"]').on('click', function(event){
+            event.preventDefault();
+            if ($('#tables').val() && form.find('input[name="num_of_people"]').val() && $('#reserveStartTime').val() && $('#reserveEndTime').val()){
+                form.submit();
+            }
         });
         $('#editReviewBtn').click(function(){
             $('#reviewStatus').val('updating');
