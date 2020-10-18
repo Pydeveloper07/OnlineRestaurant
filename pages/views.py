@@ -13,9 +13,12 @@ def index(request):
     discount_foods = Food.objects.exclude(discount=None).exclude(discount=0)
     reviews = UserReviews.objects.all().order_by('-created_date')
     sum = 0
-    for review in reviews:
-        sum += review.rate
-    average_rating = round(sum/reviews.count(), 1)
+    if reviews.count():
+        for review in reviews:
+            sum += review.rate
+        average_rating = round(sum/reviews.count(), 1)
+    else:
+        average_rating = 1
     context = {
         'foods': discount_foods,
         'reviews': reviews,

@@ -57,11 +57,11 @@
                         <div class="image-container">
                             <img class="card-img-top" src="{{food.image.url}}" alt="Card image cap">
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" data-urlAddToCart="{% url 'add_to_cart' %}" data-foodId="{{food.id}}" data-urlLike="{% url 'like' %}" data-csrf="{{csrf_token}}" data-urlDislike="{% url 'dislike' %}">
                             <div class="res-container text-center" style="font-size: 1.5em; overflow:hidden;">
                                 <p class="float-left"><i class="far fa-thumbs-up like"
-                                        style="color:blue"></i><span><small>{{food.likes.count}}</small></span></p>
-                                <p class="float-right"><span><small>{{food.dislikes.count}}</small></span><i
+                                        style="color:blue"></i><span><small class="like-count">{{food.likes.count}}</small></span></p>
+                                <p class="float-right"><span><small class="dislike-count">{{food.dislikes.count}}</small></span><i
                                         class="far fa-thumbs-down dislike" style="color:blue"></i></p>
                             </div>
                             <h4 class="card-title text-left food-name">{{food.name}}</h4>
@@ -106,4 +106,7 @@
         {% endfor %}
     </section>
 </div>
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/like.js' %}"></script>
 {% endblock %}

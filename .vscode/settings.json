@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\User\\Anaconda3\\envs\\MyDjangoEnv\\python.exe",
+    "python.pythonPath": "/home/blacktiger/env/bin/python3.8",
     "cSpell.ignoreWords": [
         "static"
     ]

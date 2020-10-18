@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from .models import BreakfastFood, DinnerFood, SupperFood, Cuisine, Type
-from django.http import Http404
+from django.contrib.auth.decorators import login_required
+from .models import BreakfastFood, DinnerFood, SupperFood, Cuisine, Type, Food
+from .models import FoodLikes, FoodDislikes
+from django.http import Http404, HttpResponse
+import json
 
 
 def menu(request):
@@ -42,3 +45,98 @@ def get_drinks(request):
         'foods': drinks,
     }
     return render(request, 'menu/listings.html', context)
+
+@login_required
+def like(request):
+    if request.method == 'POST':
+        id = request.POST['foodId']
+        user_id = request.user.id
+        existed = False
+        status = ''
+        number_of_likes = 0
+        number_of_dislikes = 0
+        if FoodLikes.objects.filter(user_id=user_id, food_id=id).exists():
+            status = 'unlike'
+            FoodLikes.objects.filter(user_id=user_id, food_id=id).delete()
+            number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+            context = {
+                'existed': existed,
+                'status': status,
+                'numOfLikes': number_of_likes
+            }
+            return HttpResponse(json.dumps(context), content_type='applications/json')
+        else:
+            if FoodDislikes.objects.filter(user_id=user_id, food_id=id).exists():
+                FoodDislikes.objects.get(user_id=user_id, food_id=id).delete()
+                existed = True
+                number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+            status = 'like'
+            new = FoodLikes.objects.create(user_id=request.user, food_id=Food.objects.get(id=id))
+            new.save()
+            number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+            context = {
+                'existed': existed,
+                'status': status,
+                'numOfLikes': number_of_likes,
+                'numOfDislikes': number_of_dislikes
+            }
+            return HttpResponse(json.dumps(context), content_type='applications/json')
+
+@login_required
+def dislike(request):
+    if request.method == 'POST':
+        id = request.POST['foodId']
+        user_id = request.user.id
+        existed = False
+        status = ''
+        number_of_likes = 0
+        number_of_dislikes = 0
+        if FoodDislikes.objects.filter(user_id=user_id, food_id=id).exists():
+            status = 'undislike'
+            FoodDislikes.objects.filter(user_id=user_id, food_id=id).delete()
+            number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+            context = {
+                'existed': existed,
+                'status': status,
+                'numOfDislikes': number_of_dislikes
+            }
+            return HttpResponse(json.dumps(context), content_type='applications/json')
+        else:
+            if FoodLikes.objects.filter(user_id=user_id, food_id=id).exists():
+                FoodLikes.objects.get(user_id=user_id, food_id=id).delete()
+                existed = True
+                number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+            status = 'dislike'
+            new = FoodDislikes.objects.create(
+                user_id=request.user, food_id=Food.objects.get(id=id))
+            new.save()
+            number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+            context = {
+                'existed': existed,
+                'status': status,
+                'numOfLikes': number_of_likes,
+                'numOfDislikes': number_of_dislikes
+            }
+            return HttpResponse(json.dumps(context), content_type='applications/json')
+
+def add_to_cart(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        id = request.POST['food_id']
+        quantity = request.POST['quantity']
+        if not 'foods' in request.session.keys():
+            request.session['foods'] = {}
+        if id in request.session['foods'].keys():
+            request.session['foods'][id] = int(request.session['foods'][id]) + int(quantity)
+        else:
+            request.session['foods'][id] = quantity
+        context = {
+            'message': 'Success'
+        }
+        print(request.session['foods'])
+        return HttpResponse(json.dumps(context), content_type='applications/json')
+    else:
+        context = {
+            'login_required': True
+        }
+        return HttpResponse(json.dumps(context), content_type='applications/json')
+
