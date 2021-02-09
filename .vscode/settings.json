@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/home/blacktiger/env/bin/python3.8",
+    "python.pythonPath": "env\\Scripts\\python.exe",
     "cSpell.ignoreWords": [
         "static"
     ]

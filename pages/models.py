@@ -101,4 +101,4 @@ class ProcessingOrder(models.Model):
 
     def get_quantity_list(self):
         return list(items_quantity_list.split(','))
- 
+
