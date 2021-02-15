@@ -34,12 +34,12 @@ def rate(request):
         content = request.POST['content']
         user_rate = request.POST['rating']
         if status == 'new':
-            new_review = UserReviews.objects.create(user_id=user, content=content, rate=user_rate)
+            new_review = UserReviews.objects.create(user=user, content=content, rate=user_rate)
             new_review.save()
             messages.success(request, 'Your review has been recorded!')
             return redirect('index')
         if status == 'updating':
-            review = UserReviews.objects.get(user_id=user.id)
+            review = UserReviews.objects.get(user=user.id)
             review.content = content
             review.rate = user_rate
             review.save(update_fields=['content', 'rate'])
@@ -187,7 +187,7 @@ def order_table(request):
             return Http404()
         start_time = datetime.datetime.strptime(st, '%H:%M').time()
         end_time = datetime.datetime.strptime(et, '%H:%M').time()
-        new_res = ReservedTable.objects.create(table_id=table, user_id=request.user, start_time=start_time, end_time=end_time)
+        new_res = ReservedTable.objects.create(table=table, user=request.user, start_time=start_time, end_time=end_time)
         new_res.save()
         messages.success(request, 'Table successfully reserved!')
         return redirect('index')

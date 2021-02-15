@@ -13,9 +13,9 @@ def review_list(request):
         for review in reviews:
             r_dic = {}
             r_dic['user'] = {
-                'first_name': review.user_id.first_name,
-                'last_name': review.user_id.last_name,
-                'username': review.user_id.username
+                'first_name': review.user.first_name,
+                'last_name': review.user.last_name,
+                'username': review.user.username
             }
             r_dic['content'] = review.content
             r_dic['created_date'] = review.created_date.isoformat()

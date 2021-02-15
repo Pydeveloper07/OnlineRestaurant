@@ -50,15 +50,15 @@ def get_drinks(request):
 def like(request):
     if request.method == 'POST':
         id = request.POST['foodId']
-        user_id = request.user.id
+        user = request.user.id
         existed = False
         status = ''
         number_of_likes = 0
         number_of_dislikes = 0
-        if FoodLikes.objects.filter(user_id=user_id, food_id=id).exists():
+        if FoodLikes.objects.filter(user=user, food=id).exists():
             status = 'unlike'
-            FoodLikes.objects.filter(user_id=user_id, food_id=id).delete()
-            number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+            FoodLikes.objects.filter(user=user, food=id).delete()
+            number_of_likes = FoodLikes.objects.filter(food=id).count()
             context = {
                 'existed': existed,
                 'status': status,
@@ -66,14 +66,14 @@ def like(request):
             }
             return HttpResponse(json.dumps(context), content_type='applications/json')
         else:
-            if FoodDislikes.objects.filter(user_id=user_id, food_id=id).exists():
-                FoodDislikes.objects.get(user_id=user_id, food_id=id).delete()
+            if FoodDislikes.objects.filter(user=user, food=id).exists():
+                FoodDislikes.objects.get(user=user, food=id).delete()
                 existed = True
-                number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+                number_of_dislikes = FoodDislikes.objects.filter(food=id).count()
             status = 'like'
-            new = FoodLikes.objects.create(user_id=request.user, food_id=Food.objects.get(id=id))
+            new = FoodLikes.objects.create(user=request.user, food=Food.objects.get(id=id))
             new.save()
-            number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+            number_of_likes = FoodLikes.objects.filter(food=id).count()
             context = {
                 'existed': existed,
                 'status': status,
@@ -86,15 +86,15 @@ def like(request):
 def dislike(request):
     if request.method == 'POST':
         id = request.POST['foodId']
-        user_id = request.user.id
+        user = request.user.id
         existed = False
         status = ''
         number_of_likes = 0
         number_of_dislikes = 0
-        if FoodDislikes.objects.filter(user_id=user_id, food_id=id).exists():
+        if FoodDislikes.objects.filter(user=user, food=id).exists():
             status = 'undislike'
-            FoodDislikes.objects.filter(user_id=user_id, food_id=id).delete()
-            number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+            FoodDislikes.objects.filter(user=user, food=id).delete()
+            number_of_dislikes = FoodDislikes.objects.filter(food=id).count()
             context = {
                 'existed': existed,
                 'status': status,
@@ -102,15 +102,15 @@ def dislike(request):
             }
             return HttpResponse(json.dumps(context), content_type='applications/json')
         else:
-            if FoodLikes.objects.filter(user_id=user_id, food_id=id).exists():
-                FoodLikes.objects.get(user_id=user_id, food_id=id).delete()
+            if FoodLikes.objects.filter(user=user, food=id).exists():
+                FoodLikes.objects.get(user=user, food=id).delete()
                 existed = True
-                number_of_likes = FoodLikes.objects.filter(food_id=id).count()
+                number_of_likes = FoodLikes.objects.filter(food=id).count()
             status = 'dislike'
             new = FoodDislikes.objects.create(
-                user_id=request.user, food_id=Food.objects.get(id=id))
+                user=request.user, food=Food.objects.get(id=id))
             new.save()
-            number_of_dislikes = FoodDislikes.objects.filter(food_id=id).count()
+            number_of_dislikes = FoodDislikes.objects.filter(food=id).count()
             context = {
                 'existed': existed,
                 'status': status,

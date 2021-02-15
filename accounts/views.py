@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from pages.models import CustomUser
+from django.contrib.auth import get_user_model
 from menu.models import Food
 from django.contrib.auth import authenticate
 from django.contrib import auth
@@ -41,24 +40,20 @@ def register(request):
         address = request.POST['address']
         phone_number = request.POST['phone_number']
         password = request.POST['password']
-        user = User.objects.create_user(
-            username=username, password=password, first_name=first_name, last_name=last_name, email=email)
+        user = get_user_model().objects.create_user(
+                username=username, password=password, first_name=first_name, 
+                last_name=last_name, email=email, avatar=request.FILES.get('avatar', None),
+                phone_number=phone_number, address=address
+            )
         user.save()
-        custom_user = CustomUser.objects.create(
-            user_id=user,
-            avatar=request.FILES.get('avatar', None),
-            phone_number=phone_number,
-            address=address
-        )
-        custom_user.save()
         messages.success(request, 'Registration succeeded! Enjoy our services!')
         return redirect('index')
             
 def edit_profile(request):
     if request.method == "POST":
-        user = get_object_or_404(User, id=request.user.id)
+        user = get_object_or_404(get_user_model(), id=request.user.id)
         username = first_name = last_name = email = address = phone_number = None
-        avatar = user.custom_user.avatar
+        avatar = user.avatar
         if not user:
             return Http404()
         if request.POST['username']:
@@ -80,14 +75,11 @@ def edit_profile(request):
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
-        custom_user = get_object_or_404(CustomUser, user_id=user.id)
-        if not custom_user:
-            return Http404()
-        custom_user.address = address
-        custom_user.phone_number = phone_number
-        custom_user.avatar = avatar
-        user.save(update_fields=['username', 'first_name', 'last_name', 'email'])
-        custom_user.save(update_fields=['address', 'phone_number', 'avatar'])
+        user.address = address
+        user.phone_number = phone_number
+        user.avatar = avatar
+        user.save(update_fields=['username', 'first_name', 'last_name', 
+                                'email','address', 'phone_number', 'avatar'])
         messages.success(request, 'Your profile successfully updated!')
         return redirect('dashboard', user.username)
 
@@ -101,7 +93,7 @@ def check_username(request):
             error = False
             message = 'Username not changing!'
         else:
-            if User.objects.filter(username=username).exists():
+            if get_user_model().objects.filter(username=username).exists():
                 error = True
                 message = 'Username is not available'
             else:

@@ -1,23 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.validators import int_list_validator
-import os
 import datetime
 import math
-
-def user_image_upload_path(instance, filename):
-    filename = instance.user_id.username + '.jpg'
-    return os.path.join('users', filename) 
-
-class CustomUser(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='custom_user')
-    avatar = models.ImageField(max_length=200, upload_to=user_image_upload_path, null=True, blank=True)
-    phone_number = models.CharField(max_length=100, null=True, blank=True)
-    address = models.TextField(max_length=500, null=True)
-
-    def __str__(self):
-        return self.user_id.username
 
 class Bonus(models.Model):
     name = models.CharField(max_length=100)
@@ -27,21 +13,21 @@ class Bonus(models.Model):
         return self.name 
     
 class UserBonus(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_bonus')
-    bonus_id = models.ForeignKey(Bonus, on_delete=models.CASCADE, related_name='users')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='user_bonus')
+    bonus = models.ForeignKey(Bonus, on_delete=models.CASCADE, related_name='users')
     created_date = models.DateField(editable=False, auto_now=True)
 
     def __str__(self):
-        return self.user_id.username
+        return self.user.username
 
 class UserReviews(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='review')
+    user = models.OneToOneField(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name='review')
     content = models.TextField(max_length=2000)
     created_date = models.DateTimeField(auto_now=True)
     rate = models.IntegerField()
 
     def __str__(self):
-        return self.user_id.username
+        return self.user.username
     
 class Table(models.Model):
     capacity = models.IntegerField()
@@ -52,13 +38,13 @@ class Table(models.Model):
         return str(self.id)
 
 class ReservedTable(models.Model):
-    table_id = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='reserved_times')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reserved_tables')
+    table = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='reserved_times')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='reserved_tables')
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     def __str__(self):
-        return '{0}-{1}'.format(self.user_id.username, self.table_id.id)
+        return '{0}-{1}'.format(self.user.username, self.table.id)
 
     @staticmethod
     def get_total_price(start_time, end_time, duration, price_per_duration):
@@ -68,7 +54,7 @@ class ReservedTable(models.Model):
         return math.ceil(float(difference_in_minutes)/float(duration))*price_per_duration
 
 class OrderHistory(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='orders')  
+    user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name='orders')  
     items_list = models.CharField(max_length=200, validators=[int_list_validator])
     items_quantity_list = models.CharField(max_length=200, validators=[int_list_validator])
     price = models.FloatField()
@@ -76,7 +62,7 @@ class OrderHistory(models.Model):
     created_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user_id.username
+        return self.user.username
     
     def get_item_list(self):
         return list(self.items_list.split(','))
@@ -85,7 +71,7 @@ class OrderHistory(models.Model):
         return list(self.items_quantity_list.split(','))
 
 class ProcessingOrder(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='processing_orders')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='processing_orders')
     items_list = models.CharField(max_length=200, validators=[int_list_validator])
     items_quantity_list = models.CharField(max_length=200, validators=[int_list_validator])
     address = models.CharField(max_length=500)
@@ -94,11 +80,11 @@ class ProcessingOrder(models.Model):
     created_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user_id.username
+        return self.user.username
     
     def get_item_list(self):
-        return list(items_list.split(','))
+        return list(self.items_list.split(','))
 
     def get_quantity_list(self):
-        return list(items_quantity_list.split(','))
+        return list(self.items_quantity_list.split(','))
 

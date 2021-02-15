@@ -9,7 +9,7 @@ class CuisineSerializer(serializers.ModelSerializer):
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
-        fields = ['id', 'name', 'description', 'price', 'image', 'discount', 'cuisine_id', 'type_id']
+        fields = ['id', 'name', 'description', 'price', 'image', 'discount', 'cuisine', 'type']
 
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:

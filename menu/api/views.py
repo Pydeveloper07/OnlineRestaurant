@@ -29,7 +29,7 @@ def types_list(request):
 @api_view(['GET'])
 def drinks_list(request):
     if request.method == 'GET':
-        drinks = Food.objects.filter(type_id=Type.objects.get(name='Drink'))
+        drinks = Food.objects.filter(type=Type.objects.get(name='Drink'))
         serializer = FoodSerializer(drinks, many=True)
         return Response(serializer.data)
 
@@ -38,7 +38,7 @@ def breakfast_list(request):
     if request.method == 'GET':
         food_ids = []
         for food in BreakfastFood.objects.all():
-            food_ids.append(food.food_id.id)
+            food_ids.append(food.food.id)
         foods = Food.objects.filter(id__in=food_ids)
         serializer = FoodSerializer(foods, many=True)
         return Response(serializer.data)
@@ -48,7 +48,7 @@ def dinner_list(request):
     if request.method == 'GET':
         food_ids = []
         for food in DinnerFood.objects.all():
-            food_ids.append(food.food_id.id)
+            food_ids.append(food.food.id)
         foods = Food.objects.filter(id__in=food_ids)
         serializer = FoodSerializer(foods, many=True)
         return Response(serializer.data)
@@ -58,7 +58,7 @@ def supper_list(request):
     if request.method == 'GET':
         food_ids = []
         for food in SupperFood.objects.all():
-            food_ids.append(food.food_id.id)
+            food_ids.append(food.food.id)
         foods = Food.objects.filter(id__in=food_ids)
         serializer = FoodSerializer(foods, many=True)
         return Response(serializer.data)

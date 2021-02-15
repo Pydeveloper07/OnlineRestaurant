@@ -1,14 +1,20 @@
 from rest_framework import serializers
 from pages.models import UserReviews
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['avatar']
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar = CustomUserSerializer()
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'username']
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'username', 'avatar']
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
         model = UserReviews
-        fields = ['user', 'content', 'created_date', 'rate']
+        fields = ['id', 'user', 'content', 'created_date', 'rate']
