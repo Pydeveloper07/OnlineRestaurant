@@ -158,5 +158,12 @@ MESSAGE_TAGS = {
 }
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3922'
+    'http://localhost:3000'
 ]
+
+# Email config
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'fantasyrestaurantt@gmail.com'
+EMAIL_HOST_PASSWORD = 'fantasy07!'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

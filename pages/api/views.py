@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication
+from django.core.mail import BadHeaderError, send_mail
+import smtplib
 from django.contrib.auth import get_user_model
 from pages.models import UserReviews
 from accounts.models import CustomUser
@@ -44,7 +46,24 @@ class UserReview(APIView):
         serializer = ReviewSerializer(review)
         return Response(serializer.data)
 
-@api_view(['GET'])
-def delete(request):
-    review = UserReviews.objects.all().order_by('-created_data')[0]
-    review.delete()
+@api_view(['POST'])
+def contact(request):
+    if request.method == 'POST':
+        subject = request.data['subject']
+        email = request.data['email']
+        message = request.data['message']
+        if email and message:
+            try:
+                send_mail(
+                    subject, 
+                    'From: {0}\n{1}'.format(email, message), 
+                    email, 
+                    ['fantasyrestaurantt@gmail.com'],
+                    fail_silently=False
+                    )
+                return Response({'message': 'Success!'}, status=status.HTTP_200_OK)
+            except BadHeaderError:
+                return Response({'message': 'Invalid Header found!'}, status=status.HTTP_400_BAD_REQUEST)
+            except:
+                return Response({'message': 'Something went wrong in the server:( Try again!'}, status=status.HTTP_400_BAD_REQUEST)
+        
