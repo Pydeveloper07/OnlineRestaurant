@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pages.models import UserReviews
+from pages.models import UserReviews, Table, ReservedTable
 from django.contrib.auth import get_user_model
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,9 +13,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = UserReviews
         fields = ['id', 'user', 'content', 'created_date', 'rate']
 
-class ReviewSerializer2(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-
+class TableSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserReviews
-        fields = ['user', 'created_date', 'content', 'rate']
+        model = Table
+        fields = ['id', 'capacity', 'duration', 'price_per_duration']
+
+class ReservedTableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReservedTable
+        fields = ['id', 'start_time', 'end_time']

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from django.contrib.messages import constants
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,8 +62,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+JWT_TOKEN_EXPIRATION_TIME = datetime.timedelta(minutes=30)
+
 JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'accounts.api.utils.jwt_response_handler'
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'accounts.api.utils.jwt_response_handler',
+    'JWT_EXPIRATION_DELTA': JWT_TOKEN_EXPIRATION_TIME,
+    'JWT_ALLOW_REFRESH': True,
 }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
