@@ -62,7 +62,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-JWT_TOKEN_EXPIRATION_TIME = datetime.timedelta(minutes=30)
+JWT_TOKEN_EXPIRATION_TIME = datetime.timedelta(minutes=60)
 
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'accounts.api.utils.jwt_response_handler',

@@ -8,5 +8,7 @@ urlpatterns = [
     path('tables/', views.table_list),
     path('tables/<int:pk>/', views.check_table),
     path('user-tables/', views.get_user_tables),
-    path('order-table/', views.order_table)
+    path('order-table/', views.order_table),
+    path('order/', views.order),
+    path('user-order-history/', views.get_user_orders)
 ]

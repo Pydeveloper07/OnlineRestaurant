@@ -7,7 +7,8 @@ from django.core.mail import BadHeaderError, send_mail
 from django.shortcuts import get_object_or_404
 import datetime
 from django.contrib.auth import get_user_model
-from pages.models import UserReviews, Table, ReservedTable
+from pages.models import UserReviews, Table, ReservedTable, OrderHistory
+from menu.models import Food
 from accounts.models import CustomUser
 from .serializers import ReviewSerializer, TableSerializer, ReservedTableSerializer
 
@@ -143,3 +144,64 @@ def check_invalidity(st, et, ts, te):
         return True
     else:
         return False
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated,])
+def order(request):
+    if request.method == 'POST':
+        new_order = OrderHistory.objects.create(user=request.user, 
+                                                items_list=request.data['item_list'],
+                                                items_quantity_list=request.data['quantity_list'],
+                                                price=request.data['price'],
+                                                delivery_fee=request.data['delivery_fee'])
+        new_order.save()
+        order_item = {
+            'id': new_order.id,
+            'totalCost': int(new_order.price) + int(new_order.delivery_fee),
+            'created_date': new_order.created_date
+        }
+        item_list = []
+        counter = 0
+        for id in new_order.get_item_list():
+            food = Food.objects.get(pk=id)
+            i_dic = {
+                'id': counter,
+                'name': food.name,
+                'quantity': new_order.get_quantity_list()[counter],
+                'price': food.price
+            }
+            item_list.append(i_dic)
+            counter += 1
+        order_item['items'] = item_list
+        return Response(data=order_item, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated,])
+def get_user_orders(request):
+    if request.method == 'GET':
+        orders = request.user.orders.all()
+        order_list = []
+        if orders:
+            order_counter = 0
+            for order in orders:
+                o_dic = {
+                    'id': order_counter,
+                    'totalCost': order.price + order.delivery_fee,
+                    'created_date': order.created_date,
+                }
+                item_list = []
+                counter = 0
+                for id in order.get_item_list():
+                    food = Food.objects.get(pk=id)
+                    i_dic = {
+                        'id': counter,
+                        'name': food.name,
+                        'quantity': order.get_quantity_list()[counter],
+                        'price': food.price
+                    }
+                    item_list.append(i_dic)
+                    counter += 1
+                o_dic['items'] = item_list
+                order_list.append(o_dic)
+                order_counter += 1
+        return Response(order_list)
