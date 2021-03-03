@@ -111,7 +111,8 @@ def order_table(request):
             end_time = datetime.datetime.strptime(end_time, '%H:%M').time()
             new_res = ReservedTable.objects.create(table=table, user=request.user, start_time=start_time, end_time=end_time)
             new_res.save()
-            return Response({'is_valid': True}, status=status.HTTP_201_CREATED)
+            serializer = ReservedTableSerializer(new_res)
+            return Response({'is_valid': True, 'table': serializer.data}, status=status.HTTP_201_CREATED)
 
 def validate(id, nom, st, et):
     is_valid = True
