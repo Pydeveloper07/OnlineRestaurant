@@ -7,7 +7,7 @@ from django.core.mail import BadHeaderError, send_mail
 from django.shortcuts import get_object_or_404
 import datetime
 from django.contrib.auth import get_user_model
-from pages.models import UserReviews, Table, ReservedTable, OrderHistory
+from pages.models import UserReviews, Table, ReservedTable, OrderHistory, Bonus, UserBonus
 from menu.models import Food
 from accounts.models import CustomUser
 from .serializers import ReviewSerializer, TableSerializer, ReservedTableSerializer
@@ -155,6 +155,15 @@ def order(request):
                                                 price=request.data['price'],
                                                 delivery_fee=request.data['delivery_fee'])
         new_order.save()
+        total_expense = 0
+        for order in request.user.orders.all():
+            total_expense += order.price
+        for bonus in Bonus.objects.all().order_by('-value'):
+            if total_expense >= bonus.threshold:
+                user_bonus = request.user.user_bonus
+                user_bonus.bonus = bonus
+                user_bonus.save()
+                break
         order_item = {
             'id': new_order.id,
             'totalCost': int(new_order.price) + int(new_order.delivery_fee),

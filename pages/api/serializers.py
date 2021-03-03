@@ -22,8 +22,3 @@ class ReservedTableSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReservedTable
         fields = ['id', 'start_time', 'end_time']
-
-# class OrderSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OrderHistory
-#         fields = ['items_list', 'quantity']

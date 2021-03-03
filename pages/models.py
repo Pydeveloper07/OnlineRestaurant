@@ -8,6 +8,7 @@ import math
 class Bonus(models.Model):
     name = models.CharField(max_length=100)
     value = models.FloatField()
+    threshold = models.IntegerField()
 
     def __str__(self):
         return self.name 
